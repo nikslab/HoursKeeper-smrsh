@@ -14,12 +14,21 @@
  * 
  */
 
+//
+// Config
+//
+define("DEBUG", 3);
+if(DEBUG < 4) {
+    error_reporting(0);
+}
 $pid = getmypid();
 $upload_directory = "/mnt/Dropbox/Lab/HoursKeeper/smrsh";
 $output_file = "$upload_directory/$pid.txt";
 $sql_file = "$upload_directory/$pid.sql";
 
-// Start parsing e-mail
+//
+// Start parsing e-mail, its coming over stdin
+//
 $email = "";
 $stdin = fopen( 'php://stdin', 'r' );
 $line = "a";
@@ -38,19 +47,21 @@ while (strpos($line, "-Apple-Mail") === false) {
     $line = fgets(STDIN);
 }
 
-// Decode the e-mail attachment
+//
+// Decode the e-mail attachment (quoted printable format)
+//
 $decoded = quoted_printable_decode($email);
 
 // Save the contents into a local file as a backup (optional)
 file_put_contents($output_file, $decoded);
 
-//
+// Split contents into lines and put into array to loop over
 $DATA = explode("\n", $decoded);
 
-// Config
-$DEBUG = 0;
 
-// Connect to database
+//
+// Connect to database, see create_db.sql for database format and crate statement
+//
 $mysqli = new mysqli( "localhost", "hrskeeper", "password", "HoursKeeper");
 
 // Determine max(date) in database when we logged 24 hours, in a loop backwards until found
@@ -85,9 +96,11 @@ while( !$found ) {
     }
     else { $found++; }  // database is empty
     
+    debug(4, "Will import date starting after $max_date");
+    
 }
 
-// Now get in a loop, entry by entry and generate SQL statements
+// Now get in a loop, go entry by entry and generate and run SQL statements
 $c = 0;
 $client = "a";
 foreach( $DATA as $line ) {
@@ -130,14 +143,22 @@ foreach( $DATA as $line ) {
     $insert .= "('$client', '$date', $worked, $rate, $amount, '$note');\n";
     debug(5, "One entry insert: $insert");
     
-    $transaction = ""; // holds all insert statements, we write them to file
+    $transaction = ""; // holds all insert statements, we write them to file later
     if( ( ( $date > $max_date) || ( $max_date == "" ) ) && ( $client != "" ) ) {
         $transaction .= $insert;
-        $result = $mysqli->query( $insert ); // run the query anyway
+        $result = $mysqli->query( $insert ); // run the query right away
     }
 }
 
-// Write transaction to file if you like as another form of backup (optional)
+// Write all statements to file if you like as another form of backup (optional)
 //file_put_contents($sql_file, $transaction);
+
+// ---------------------------------------------------------------------------
+
+function debug($lvl, $msg) {
+    if ($lvl <= DEBUG) {
+        print "--> Debug ($lvl): $msg\n";
+    }
+}
 
 ?>
