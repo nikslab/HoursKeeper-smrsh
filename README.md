@@ -4,7 +4,7 @@ I use <a href="https://itunes.apple.com/us/app/hours-keeper-time-tracking/id5631
 
 Luckily, HoursKeeper allows you to export your timesheet data to a CSV which it will then e-mail to any address as an attachment.
 
-Since I run my own mail server (sendmail) I setup a special e-mail address to receive these CSV timesheets, parse them and insert them into a database.
+Since I run my own mail server (sendmail) I setup a special e-mail address to receive these CSV exports, parse them and insert them into a database.
 
 With sendmail this can be accomplished with <a href="http://www.tldp.org/LDP/solrhe/Securing-Optimizing-Linux-RH-Edition-v1.3/chap22sec182.html" target=_blank>smrsh</a>.  In a virtusertable you will pipe the designated recipient to a smrsh script which will be automatically called each time this address receives an e-mail.  
 
@@ -13,7 +13,7 @@ Here is my MySQL database structure:
 <pre>
 CREATE TABLE `timesheet` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `inserted` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `inserted` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `client` varchar(255) NOT NULL,
   `date` date NOT NULL,
   `worked` int(11) NOT NULL,
@@ -29,3 +29,7 @@ CREATE TABLE `timesheet` (
   KEY `timesheet_label` (`label`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 </pre>
+
+The fields pretty much match the HoursKeeper CSV structure except for the "inserted" field, which is just the auto-timestamp of when the data was inserted into the table and the "label" field, which I edit separately through my portal and which is a category of work within the context of that client.
+
+Note that HoursKeeper exports some values such as the hours worked in a format (1:30h) that is not conducive for calculations with MySQL's sum function, so I convert them to minutes, and store them like that in the database.
