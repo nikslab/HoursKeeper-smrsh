@@ -8,7 +8,7 @@ Since I run my own mail server (sendmail) I setup a special e-mail address to re
 
 With sendmail this can be accomplished with <a href="http://www.tldp.org/LDP/solrhe/Securing-Optimizing-Linux-RH-Edition-v1.3/chap22sec182.html" target=_blank>smrsh</a>.  In a virtusertable you will pipe the designated recipient to a smrsh script which will be automatically called each time this address receives an e-mail.  
 
-Here is my MySQL database structure:
+Here is my MySQL database table to hold this data:
 
 <pre>
 CREATE TABLE `timesheet` (
