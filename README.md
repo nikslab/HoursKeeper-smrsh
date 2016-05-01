@@ -1,6 +1,6 @@
 # HoursKeeper-smrsh
 
-I use <a href="https://itunes.apple.com/us/app/hours-keeper-time-tracking/id563155321?mt=8" target=_blank>HoursKeeper</a> to keep my timesheet.  While HourseKeeper does basic reporting as well as allow you to back-up data and issues invoices, I needed to do more and different kinds of reporting for specific clients.  I also did not want to be tied to this app long term.  Indeed, I built an entire portal where clients can review my timesheets in near real-time and pay on-line. I needed my timesheet data stored in a MySQL database on the server.
+I use <a href="https://itunes.apple.com/us/app/hours-keeper-time-tracking/id563155321?mt=8" target=_blank>HoursKeeper</a> to keep my timesheet.  While HourseKeeper does basic reporting as well as allow you to back-up data and issues invoices, I needed to do more and different kinds of reporting for specific clients.  I also did not want to be tied to this app long term.  Indeed, I built an entire portal where clients can review my timesheets in near real-time and pay on-line. For this, I needed my timesheet data stored in a MySQL database on the server.
 
 Luckily, HoursKeeper allows you to export your timesheet data to a CSV which it will then e-mail to any address as an attachment.
 
@@ -32,4 +32,4 @@ CREATE TABLE `timesheet` (
 
 The fields pretty much match the HoursKeeper CSV structure except for the "inserted" field, which is just the auto-timestamp of when the data was inserted into the table and the "label" field, which I edit separately through my portal and which is a category of work within the context of that client.
 
-Note that HoursKeeper exports some values such as the hours worked in a format (1:30h) that is not conducive for calculations with MySQL's sum function, so I convert them to minutes, and store them that way in the database.
+Note that HoursKeeper exports some values such as the hours worked in a format (1:30h) that is not conducive for calculations with MySQL's sum function, so I convert them to minutes, and store them in the database that way.
